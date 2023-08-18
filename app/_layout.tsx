@@ -5,9 +5,10 @@ import { useEffect } from "react";
 import { GluestackUIProvider, Text, Box, config } from "@gluestack-ui/react";
 import { WalletConnectModal } from "@walletconnect/modal-react-native";
 import { useWalletConnectModal } from "@walletconnect/modal-react-native";
+import "react-native-gesture-handler";
 import { AuthStore } from "../config/store";
 import { providerMetadata } from "../config/walletConfig";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -23,6 +24,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { isLoggedIn } = AuthStore.useState((s) => s);
+  AsyncStorage.clear();
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
@@ -53,8 +55,9 @@ function RootLayoutNav({ isLogged }: any) {
     <GluestackUIProvider config={config.theme}>
       <Stack>
         {isLogged && isConnected ? (
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
         ) : (
+          // <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         )}
       </Stack>

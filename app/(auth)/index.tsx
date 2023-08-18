@@ -137,32 +137,39 @@ const ModalCancel = styled(Text)`
 
 export default function SingInScreen() {
   const router = useRouter();
-  const [show, setShow] = useState(false);
-  const [walletConnected, setwalletConnected] = useState(false);
-  const { isOpen, open, close, provider, isConnected, address } =
+  const { open, close, provider, isConnected, address } =
     useWalletConnectModal();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { isLoggedIn, hasVerifed } = AuthStore.useState((s) => s);
   const mode = "light-content";
-  const login = () => {
-    // Login logic when password is entered
+
+  const login = async () => {
+    // Login logic
     if (isConnected) {
-      AuthStore.update((s) => {
-        s.isLoggedIn = true;
-        router.replace("/(tabs)");
-      });
-      // console.log("Connected wallet address:", provider, address);
+      try {
+        AuthStore.update((s) => {
+          s.isLoggedIn = true;
+          router.replace("/(drawer)/(tabs)");
+        });
+        // console.log("Connected wallet address:", provider, address);
+      } catch (error) {
+        console.log("Login error:", error);
+      }
     } else {
-      showModal();
+      setIsModalVisible(true);
       // shhow modal to cannect wallet
     }
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
+  const handleConnect = async () => {
+    if (!isConnected) {
+      return open();
+    } else {
+      console.log("Login error");
+    }
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     AuthStore.update((s) => {
       s.isLoggedIn = false;
     });
@@ -208,7 +215,7 @@ export default function SingInScreen() {
           <ModalLogin>
             <ModalTex>Connect wallet</ModalTex>
             <ModalStack>
-              <Connect onPress={open}>
+              <Connect onPress={handleConnect}>
                 <ConnectTxt>{isConnected ? "Connected" : "Connect"}</ConnectTxt>
               </Connect>
               <ModalCancel onPress={() => setIsModalVisible(false)}>

@@ -1,5 +1,5 @@
 import { useState, useEffect, ChangeEvent } from "react";
-import { AuthStore } from "../../config/store";
+import { AuthStore } from "../../../config/store";
 import { KeyboardAvoidingView, StatusBar, AppState } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -35,7 +35,7 @@ export default function TabTwoScreen() {
   return (
     <Container>
       <StatusBar barStyle="light-content" />
-      <Title>Home screen</Title>
+      <Title>Donations screen</Title>
     </Container>
   );
 }
