@@ -3,7 +3,10 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import { GluestackUIProvider, Text, Box, config } from "@gluestack-ui/react";
+import { WalletConnectModal } from "@walletconnect/modal-react-native";
+import { useWalletConnectModal } from "@walletconnect/modal-react-native";
 import { AuthStore } from "../config/store";
+import { providerMetadata } from "../config/walletConfig";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -44,15 +47,22 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav({ isLogged }: any) {
+  const { isOpen, open, close, provider, isConnected, address } =
+    useWalletConnectModal();
   return (
     <GluestackUIProvider config={config.theme}>
       <Stack>
-        {isLogged ? (
+        {isLogged && isConnected ? (
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         ) : (
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         )}
       </Stack>
+      <WalletConnectModal
+        projectId="d2127653862c1e78e871be33956cf6e4"
+        providerMetadata={providerMetadata}
+        accentColor="#042a2b"
+      />
     </GluestackUIProvider>
   );
 }

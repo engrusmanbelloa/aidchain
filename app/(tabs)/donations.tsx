@@ -35,7 +35,7 @@ export default function TabTwoScreen() {
   return (
     <Container>
       <StatusBar barStyle="light-content" />
-      <Title>Home screen</Title>
+      <Title>Donations screen</Title>
     </Container>
   );
 }
