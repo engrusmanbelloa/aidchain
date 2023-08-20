@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./Onboarding.sol";
+import "./Governance.sol";
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
-contract Donation is UserOnboarding {
+contract Donation is Governance {
     IERC20 public cUSD;
-    address public owner;
+    // address public owner;
     mapping(address => bool) public programRegistered;
     // Mapping to associate each DonationOption with its userFunds array
     mapping(uint256 => UserFunds[]) private donationOptionToFunds;
     // Mapping to track program applicants
-    mapping(uint256 => address[]) private programApplicants;
+    mapping(uint256 => address[]) public programApplicants;
 
     // events
     event ProgramRegistered(string name, address recipient);
@@ -34,11 +34,6 @@ contract Donation is UserOnboarding {
 
     DonationOption[] public donationOptions;
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call this");
-        _;
-    }
-
     modifier onlyRegisteredProgram() {
         require(programRegistered[msg.sender], "Program not registered");
         _;
@@ -49,84 +44,73 @@ contract Donation is UserOnboarding {
         owner = msg.sender;
     }
 
-    // Function to register a donation program
-    function registerDonationProgram(
-        string memory _name,
-        address _recipient,
-        uint256 _startTime,
-        uint256 _endTime
-    ) external onlyOwner {
-        donationOptions.push(
-            DonationOption({
-                name: _name,
-                recipient: _recipient,
-                totalFunded: 0,
-                startTime: _startTime,
-                endTime: _endTime
-            })
+    // Function to allow users to apply for program participation
+    function applyForProgram(uint256 _proposalIndex) external onlyRegistered {
+        require(
+            _proposalIndex < programProposals.length,
+            "Invalid proposal index"
         );
 
-        programRegistered[_recipient] = true;
+        Proposal storage proposal = programProposals[_proposalIndex];
+        require(
+            proposal.status == ProposalStatus.Approved,
+            "Proposal not approved"
+        );
+        require(block.timestamp >= proposal.startTime, "Program not started");
+        require(block.timestamp <= proposal.endTime, "Program ended");
 
-        emit ProgramRegistered(_name, _recipient);
-    }
-
-    // Function to allow users to apply for program participation
-    function applyForProgram(uint256 _optionIndex) external onlyRegistered {
-        require(_optionIndex < donationOptions.length, "Invalid option index");
-
-        DonationOption storage chosenOption = donationOptions[_optionIndex];
         address applicant = userToAddress[msg.sender];
 
-        // Check if the program is still active
-        require(
-            block.timestamp >= chosenOption.startTime,
-            "Program not started"
-        );
-        require(block.timestamp <= chosenOption.endTime, "Program ended");
-
         // Add applicant to the list
-        programApplicants[_optionIndex].push(applicant);
+        programApplicants[_proposalIndex].push(applicant);
     }
 
     // Function to retrieve applicants for a specific program
     function getApplicantsForProgram(
-        uint256 _optionIndex
-    ) external view returns (address[] memory) {
-        require(_optionIndex < donationOptions.length, "Invalid option index");
-        return programApplicants[_optionIndex];
+        uint256 _proposalIndex
+    ) internal view returns (address[] memory) {
+        require(
+            _proposalIndex < programProposals.length,
+            "Invalid proposal index"
+        );
+        return programApplicants[_proposalIndex];
     }
 
-    // Function to allow users to donatne in a program
-    function donate(
-        uint256 _optionIndex,
+    // Function to donate only winning proposals
+    function donateToWinningProposal(
+        uint256 _proposalIndex,
         uint256 _amount
-    ) external onlyRegistered {
-        require(_optionIndex < donationOptions.length, "Invalid option index");
-        require(_amount >= 50 * 1e18, "Minimum donation amount not met");
+    ) public payable onlyRegistered {
+        require(
+            _proposalIndex < programProposals.length,
+            "Invalid proposal index"
+        );
 
-        DonationOption storage chosenOption = donationOptions[_optionIndex];
+        Proposal storage proposal = programProposals[_proposalIndex];
+        require(
+            proposal.status == ProposalStatus.Approved,
+            "Proposal not approved"
+        );
+        require(block.timestamp >= proposal.startTime, "Program not started");
+        require(block.timestamp <= proposal.endTime, "Program ended");
+        require(_amount >= 10 * 1e18, "Minimum donation amount not met");
+
         address donor = userToAddress[msg.sender];
 
-        // Check if the program is still active
-        require(
-            block.timestamp >= chosenOption.startTime,
-            "Program not started"
-        );
-        require(block.timestamp <= chosenOption.endTime, "Program ended");
-
-        // Transfer the donation amount from the user to the recipient
-        cUSD.transferFrom(msg.sender, chosenOption.recipient, _amount);
+        // Transfer the donation amount from the user to the proposer
+        cUSD.transferFrom(msg.sender, proposal.proposer, _amount);
 
         // Update donation records
+        uint256 optionIndex = donationOptions.length - 1; // Index of the latest program
+        DonationOption storage chosenOption = donationOptions[optionIndex];
         chosenOption.totalFunded += _amount;
 
         // Add or update user's funds for this donation option
-        UserFunds[] storage userFunds = donationOptionToFunds[_optionIndex];
+        UserFunds[] storage userFunds = donationOptionToFunds[optionIndex];
         updateUserFunds(userFunds, donor, _amount);
 
         // Emit an event to log the donation
-        emit DonationMade(donor, chosenOption.name, _amount);
+        emit DonationMade(donor, proposal.description, _amount);
     }
 
     function updateUserFunds(
@@ -164,7 +148,7 @@ contract Donation is UserOnboarding {
     function getDonationOption(
         uint256 _optionIndex
     )
-        external
+        public
         view
         returns (string memory name, address recipient, uint256 totalFunded)
     {
@@ -177,7 +161,7 @@ contract Donation is UserOnboarding {
     function getUserDonation(
         address _user,
         uint256 _optionIndex
-    ) external view returns (uint256) {
+    ) public view returns (uint256) {
         require(_optionIndex < donationOptions.length, "Invalid option index");
 
         UserFunds[] storage userFunds = donationOptionToFunds[_optionIndex];
@@ -193,7 +177,7 @@ contract Donation is UserOnboarding {
 
     function getAllUsersForOption(
         uint256 _optionIndex
-    ) external view returns (address[] memory) {
+    ) public view returns (address[] memory) {
         require(_optionIndex < donationOptions.length, "Invalid option index");
 
         UserFunds[] storage userFunds = donationOptionToFunds[_optionIndex];
@@ -209,7 +193,7 @@ contract Donation is UserOnboarding {
 
     function getProgramStatus(
         uint256 _optionIndex
-    ) external view returns (string memory status) {
+    ) public view returns (string memory status) {
         require(_optionIndex < donationOptions.length, "Invalid option index");
 
         DonationOption storage option = donationOptions[_optionIndex];
