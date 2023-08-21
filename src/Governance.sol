@@ -5,6 +5,7 @@ import "./Onboarding.sol";
 
 contract UserOnboardingWithOwnership is UserOnboarding {
     address public owner;
+    uint256 public programProposalsLength;
 
     constructor() UserOnboarding() {}
 
@@ -70,6 +71,15 @@ contract Governance is UserOnboardingWithOwnership {
                 endTime: _endTime
             })
         );
+        programProposalsLength++;
+    }
+
+    function votingStarted(uint256 _proposalIndex) public view returns (bool) {
+        require(
+            _proposalIndex < programProposals.length,
+            "Invalid proposal index"
+        );
+        return block.timestamp >= programProposals[_proposalIndex].startTime;
     }
 
     function voteOnProposal(
@@ -118,6 +128,7 @@ contract Governance is UserOnboardingWithOwnership {
         } else {
             proposal.status = ProposalStatus.Rejected;
         }
+        programProposalsLength--;
     }
 
     function getProposal(
@@ -150,5 +161,9 @@ contract Governance is UserOnboardingWithOwnership {
             proposal.startTime,
             proposal.endTime
         );
+    }
+
+    function getProgramProposalCount() external view returns (uint256) {
+        return programProposals.length;
     }
 }

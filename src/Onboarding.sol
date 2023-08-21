@@ -21,13 +21,13 @@ contract UserOnboarding {
 
     function registerUser(
         address _userAddress
-    ) external addressNotRegistered(_userAddress) {
+    ) public addressNotRegistered(_userAddress) {
         registeredUsers[msg.sender] = true;
         isAddressRegistered[_userAddress] = true;
         userToAddress[msg.sender] = _userAddress;
     }
 
-    function getUserAddress(address _user) external view returns (address) {
+    function getUserAddress(address _user) public view returns (address) {
         return userToAddress[_user];
     }
 }
