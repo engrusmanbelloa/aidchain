@@ -30,23 +30,6 @@ contract GovernanceTest is Test {
         );
     }
 
-    // function test_VoteOnProposal() public {
-    //     string memory description = "Healthcare Initiative";
-    //     uint256 startTime = block.timestamp + 3600;
-    //     uint256 endTime = startTime + 604800;
-
-    //     // Propose a program
-    //     governance.proposeProgram(description, startTime, endTime);
-
-    //     bool isSupported = true;
-    //     governance.voteOnProposal(0, isSupported);
-
-    //     // assertTrue(success, "Voting should succeed");
-    //     // Check the vote count for the proposal
-    //     (, , , uint256 votesFor, , , ) = governance.getProposal(0);
-    //     assertEq(votesFor, 1, "Votes for proposal should be 1");
-    // }
-
     function test_ProposeAndVote() public {
         // Calculate start time and end time
         uint256 startTime = block.timestamp + 1; // Start in 1 minute

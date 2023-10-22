@@ -1,77 +1,75 @@
-# AidChain Smart Contract
+**AidChain: A Holistic Humanitarian Aid Ecosystem**
 
-## Project Overview
+This repository hosts AidChain, an innovative decentralized application (DApp) reimagining humanitarian aid. AidChain goes beyond just monetary aid, offering a comprehensive platform for both financial and non-monetary contributions. Built to be deployed on any EVM-compatible blockchain, AidChain ensures transparent and accountable charitable donations and resource distribution.
 
-AidChain is a blockchain-centric platform that employs the Celo blockchain network to enhance, facilitate, and instill transparency in charitable pursuits within Nigeria. The platform aims to establish a trustworthy, transparent, and efficient presence in the aid sector.
+**Features**
 
-This project is part of the Celo Africa DAO and Bunz Hackathon initiatives, marking a step forward in leveraging blockchain for social good.
+1. **User Registration and Onboarding**
 
-## Getting Started
+   - Seamlessly onboard users, ensuring their authenticity and credibility.
 
-The source code is written and managed using the Foundry Book package. Foundry is a robust smart contract development toolchain that helps handle dependencies, compile projects, run tests, and interacts with the blockchain via command-line/Solidity scripts.
+2. **Donations and Contribution**
 
-Here's how to get started:
+   - Enable both monetary contributions and the donation of specific items (e.g., tents, medical kits) through our intuitive interface.
+   - Offer professionals a platform to donate their expertise during crises.
 
-1. Clone the AidChain repository to your local system.
-2. Inside your cloned directory, install the necessary dependencies using Foundry.
-3. Compile the smart contract scripts using Foundry's compile command.
-4. Deploy the compiled scripts onto the Celo Network using appropriate Foundry commands.
-5. Once deployed, you can run tests or interact with the Celo blockchain.
+3. **Aid Distribution and Inventory Management**
 
-## Key Features
+   - Create a digital inventory system to track relief materials and medical supplies using unique QR codes.
+   - Partner with suppliers and manufacturers for seamless item procurement and delivery.
 
-### Onboarding and User Registration
+4. **Collaboration with NGOs and Suppliers**
 
-AidChain provides a simple onboarding process where users can create accounts, get authenticated, and link their Celo wallets for transactions.
+   - Forge direct partnerships with NGOs and suppliers, facilitating their specific needs, and enabling donors to contribute directly through AidChain.
 
-### Charitable Contributions
+5. **Crowdsourced Logistics**
 
-Users can contribute to listed, verified charities. Donations are customizable, and can be configured for recurring transactions.
+   - Leverage a network of local warehouses and transportation services, allowing volunteers to offer storage space and transport aid materials effectively.
 
-### Aid Distribution
+6. **Verification and Transparency**
 
-A transparent and automated aid distribution process ensures that aid kits reach the intended beneficiaries promptly, based on clearly defined criteria.
+   - Implement blockchain-based verification protocols to confirm the reception of goods and services, building trust among donors.
+   - Maintain public donation lists, enabling NGOs and communities to showcase their needs transparently.
 
-### Tracking and Reporting
+7. **Feedback and Impact Assessment**
+   - Establish a robust feedback system where aid recipients can validate the reception and quality of aid.
+   - Store feedback securely on the blockchain, providing irrefutable evidence of the impact of each donation.
 
-Real-time tracking of donations and aid, periodic reports, and status displays of ongoing aid programs help maintain transparency.
+**Getting Started**
 
-### Decentralized Verification
+1. **Prerequisites**
 
-Integrated decentralized verification mechanisms validate the authenticity of charitable organizations and aid recipients, further supplemented by a reputation system.
+   - Node.js and yarn
+   - Expo CLI
+   - WalletConnect Provider
+   - Wallet compatible with EVM chains
+   - Solidity Smart Contracts
 
-### Feedback and Testimonials
+2. **Installation**
 
-The platform allows beneficiaries to leave feedback on received aid, helping encourage further contributions.
+   - Clone the repository: `git clone https://github.com/engrusmanbelloa/aidchain.git`
+   - Navigate to the project directory: `cd aidchain`
+   - Install dependencies: `yarn install`
+   - Configure the WalletConnect provider and wallet addresses in the code.
 
-### Recognition of Impact
+3. **Usage**
+   - Start the Expo development server: `yarn start`
+   - Scan the QR code with your Expo Go app on your mobile device.
+   - Follow the on-screen instructions to register, connect your wallet, and explore the features.
 
-AidChain recognizes and rewards users who make a significant positive impact through badges or rewards.
+**Contributing**
 
-### Community Governance
+Contributions are encouraged! Have suggestions, bug reports, or feature requests? Open an issue or create a pull request to collaborate.
 
-A decentralized governance mechanism allows all stakeholders to contribute to the decision-making process.
+**License**
 
-### Multi-Language Support
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-The platform offers multiple language options to cater to a diversified user base.
+**Contact**
 
-### Custom Smart Contracts
+For inquiries or collaboration opportunities, reach out to:
 
-AidChain uses custom smart contracts to facilitate unique fundraising events, auctions, and crowdfunding campaigns.
+_Bello Usman A._
+_Email: usmanbelloa@gmail.com_
 
-### Privacy and Impact Metrics
-
-AidChain respects user privacy with features like zero-knowledge proofs or selective disclosure. It also measures and displays the tangible impact of donations.
-
-### Inclusive Payment Options
-
-AidChain offers multiple payment options beyond cryptocurrencies, like mobile money, to cater to users with varying access to financial services.
-
-### Disaster Relief Fund
-
-In the case of emergencies or unforeseen crises, AidChain provides a dedicated response via a designated fund or smart contract.
-
-Visit our website (insert website link), or join our community for more information and updates.
-
-**Disclaimer:** This document provides an overview of AidChain's features and functionalities. The actual implementation may vary. Users should refer to the platform's official documentation for detailed information and usage instructions.
+By embracing these advancements, AidChain stands poised to revolutionize the humanitarian aid landscape, ensuring a swift, transparent, and impactful response to crises. Join us in making a difference.
