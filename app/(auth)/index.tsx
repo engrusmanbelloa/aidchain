@@ -5,7 +5,8 @@ import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
-import { useWalletConnectModal } from "@walletconnect/modal-react-native";
+import { useWeb3Modal } from "@web3modal/wagmi-react-native";
+import { useAccount } from "wagmi";
 import {
   GluestackUIProvider,
   Text,
@@ -34,22 +35,18 @@ const Title = styled(Text)`
   font-weight: 700;
   line-height: 50px;
 `;
-const Main = styled(KeyboardAvoidingView)`
+const Main = styled(Box)`
   background: #eef4f2;
-  alignitems: center;
-  justify-content: center;
   width: 100%;
   height: 100%;
   top: 30%;
-  border-radius: 30px;
-  padding: 10px;
+  align-items: center;
+  border-radius: 25px;
 `;
 const ContinueStack = styled(VStack)`
   width: 80%;
-  height: 50px;
-  bottom: 15%;
-  justify-content: center;
-  margin: auto;
+  height: 20%;
+  top: 25%;
 `;
 const Continue = styled(Text)`
   margin-bottom: 25px;
@@ -80,9 +77,9 @@ const LoginTxt = styled(Text)`
   font-size: 16px;
   font-weight: 400;
 `;
-const SignUpBox = styled(Pressable)`
-  justify-content: center;
+const SignUpBox = styled(HStack)`
   align-items: center;
+  top: 70%;
 `;
 const SignUp = styled(Link)``;
 const SignUpTxt = styled(Text)`
@@ -95,7 +92,6 @@ const SignUpTxt = styled(Text)`
 const ModalBox = styled(Modal)`
   top: 50%;
 `;
-// background: #eef4f2;
 const ModalLogin = styled(VStack)`
   background: #cdbda9;
   width: 100%;
@@ -137,8 +133,8 @@ const ModalCancel = styled(Text)`
 
 export default function SingInScreen() {
   const router = useRouter();
-  const { open, close, provider, isConnected, address } =
-    useWalletConnectModal();
+  const { open, close } = useWeb3Modal();
+  const { address, isConnecting, isDisconnected, isConnected } = useAccount();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { isLoggedIn, hasVerifed } = AuthStore.useState((s) => s);
   const mode = "light-content";
@@ -163,7 +159,8 @@ export default function SingInScreen() {
 
   const handleConnect = async () => {
     if (!isConnected) {
-      return open();
+      await open();
+      // return open();
     } else {
       console.log("Login error");
     }
@@ -175,6 +172,21 @@ export default function SingInScreen() {
     });
     router.push("/(auth)/signup");
   };
+
+  useEffect(() => {
+    if (isConnected) {
+      try {
+        AuthStore.update((s) => {
+          s.isLoggedIn = true;
+          setIsModalVisible(false);
+          router.replace("/(drawer)/(tabs)");
+        });
+        // console.log("Connected wallet address:", provider, address);
+      } catch (error) {
+        console.log("Login error:", error);
+      }
+    }
+  }, [isConnected]);
 
   return (
     <Container>

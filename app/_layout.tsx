@@ -4,11 +4,38 @@ import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import { GluestackUIProvider, Text, Box, config } from "@gluestack-ui/react";
 import { WalletConnectModal } from "@walletconnect/modal-react-native";
-import { useWalletConnectModal } from "@walletconnect/modal-react-native";
+// import { useWalletConnectModal } from "@walletconnect/modal-react-native";
 import "react-native-gesture-handler";
 import { AuthStore } from "../config/store";
-import { providerMetadata } from "../config/walletConfig";
+import { metadata } from "../config/walletConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  createWeb3Modal,
+  defaultWagmiConfig,
+  Web3Modal,
+} from "@web3modal/wagmi-react-native";
+import { WagmiConfig, useAccount } from "wagmi";
+import { mainnet, polygon, arbitrum } from "wagmi/chains";
+import * as Clipboard from "expo-clipboard";
+
+// wallet modal configuration
+const projectId =
+  process.env.EXPO_PROJECT_ID || "d2127653862c1e78e871be33956cf6e4";
+const chains = [mainnet, polygon, arbitrum];
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
+
+// Create modal
+createWeb3Modal({
+  projectId,
+  chains,
+  wagmiConfig,
+  defaultChain: mainnet,
+  clipboardClient: {
+    setString: async (value: string) => {
+      await Clipboard.setStringAsync(value);
+    },
+  },
+});
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -46,27 +73,25 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav isLogged={isLoggedIn} />;
+  return (
+    <WagmiConfig config={wagmiConfig}>
+      <RootLayoutNav isLogged={isLoggedIn} />
+      <Web3Modal />
+    </WagmiConfig>
+  );
 }
 
 function RootLayoutNav({ isLogged }: any) {
-  const { isOpen, open, close, provider, isConnected, address } =
-    useWalletConnectModal();
+  const { address, isConnecting, isDisconnected, isConnected } = useAccount();
   return (
     <GluestackUIProvider config={config.theme}>
       <Stack>
         {isLogged && isConnected ? (
           <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
         ) : (
-          // <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         )}
       </Stack>
-      <WalletConnectModal
-        projectId="d2127653862c1e78e871be33956cf6e4"
-        providerMetadata={providerMetadata}
-        accentColor="#042a2b"
-      />
     </GluestackUIProvider>
   );
 }

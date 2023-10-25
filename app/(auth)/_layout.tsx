@@ -20,7 +20,7 @@ const AuthLayout = () => {
       const isReady = rootNavigation?.isReady();
       if (isReady && isLoggedIn) {
         setIsLoading(false);
-        router.replace("/(tabs)");
+        router.replace("/(drawer)/(tabs)");
         return null; // Return null to prevent rendering the auth screens
       }
     };

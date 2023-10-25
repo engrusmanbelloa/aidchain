@@ -4,6 +4,7 @@ import { Tabs, useRouter } from "expo-router";
 import { useWalletConnectModal } from "@walletconnect/modal-react-native";
 import { useNavigation, DrawerActions } from "@react-navigation/native";
 import styled from "styled-components/native";
+import { useAccount } from "wagmi";
 import {
   GluestackUIProvider,
   Text,
@@ -30,15 +31,13 @@ const WalletConnect = styled(Pressable)`
   padding: 0px;
   box-sizing: border-box;
 `;
-const WalletTxt = styled(Text)`
+const WalletTxt = styled(Box)`
   background-color: #5eb1bf;
-  height: 100%;
   width: 70px;
-  padding: 7px 0px;
+  padding: 2px;
   border-radius: 50px;
-  font-size: 16px;
-  font-weight: 600;
-  text-align: center;
+  justify-content: center;
+  align-items: center;
   margin-right: 5px;
 `;
 const WalletAd = styled(Text)`
@@ -118,8 +117,8 @@ function AvatarHeader() {
 export default function TabLayout() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const router = useRouter();
-  const { provider, isConnected, address } = useWalletConnectModal();
-
+  const { provider } = useWalletConnectModal();
+  const { address, isConnecting, isDisconnected, isConnected } = useAccount();
   const WalletAddress = address?.toString();
   const shortenedAddress =
     WalletAddress?.slice(0, 4) +
@@ -138,6 +137,7 @@ export default function TabLayout() {
       try {
         console.log("Provider", provider);
         await provider?.disconnect();
+        setIsModalVisible(false);
         router.replace("/(auth)");
       } catch (error) {
         console.log("Disconnect error: ", error);
@@ -168,7 +168,9 @@ export default function TabLayout() {
           ),
           headerRight: () => (
             <WalletConnect onPress={OpenWalletOptions}>
-              <WalletTxt>Wallet:</WalletTxt>
+              <WalletTxt>
+                <Ionicons name="wallet-outline" size={34} color="#042a2b" />
+              </WalletTxt>
               <WalletAd>{shortenedAddress}</WalletAd>
               <ModalBox
                 isOpen={isModalVisible}
