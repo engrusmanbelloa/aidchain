@@ -5,18 +5,14 @@ import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
-import { useWeb3Modal } from "@web3modal/wagmi-react-native";
+import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi-react-native";
 import { useAccount } from "wagmi";
 import {
-  GluestackUIProvider,
   Text,
   Box,
-  config,
   Pressable,
-  Input,
   VStack,
   HStack,
-  Button,
   Modal,
   Link,
 } from "@gluestack-ui/react";
@@ -134,6 +130,7 @@ const ModalCancel = styled(Text)`
 export default function SingInScreen() {
   const router = useRouter();
   const { open, close } = useWeb3Modal();
+  const { selectedNetworkId } = useWeb3ModalState();
   const { address, isConnecting, isDisconnected, isConnected } = useAccount();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { isLoggedIn, hasVerifed } = AuthStore.useState((s) => s);
@@ -159,7 +156,7 @@ export default function SingInScreen() {
 
   const handleConnect = async () => {
     if (!isConnected) {
-      await open();
+      await open({ view: "Account" });
       // return open();
     } else {
       console.log("Login error");
@@ -181,6 +178,7 @@ export default function SingInScreen() {
           setIsModalVisible(false);
           router.replace("/(drawer)/(tabs)");
         });
+        // console.log("Selected Network ID: ", selectedNetworkId);
         // console.log("Connected wallet address:", provider, address);
       } catch (error) {
         console.log("Login error:", error);

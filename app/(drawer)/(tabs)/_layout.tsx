@@ -6,10 +6,8 @@ import { useNavigation, DrawerActions } from "@react-navigation/native";
 import styled from "styled-components/native";
 import { useAccount } from "wagmi";
 import {
-  GluestackUIProvider,
   Text,
   Box,
-  config,
   Pressable,
   Input,
   VStack,
@@ -19,6 +17,7 @@ import {
   Link,
   Image,
 } from "@gluestack-ui/react";
+import { AuthStore } from "../../../config/store";
 
 const WalletConnect = styled(Pressable)`
   background-color: #eef4f2;
@@ -145,6 +144,20 @@ export default function TabLayout() {
     }
     router.replace("/(auth)");
   };
+
+  useEffect(() => {
+    if (!isConnected) {
+      try {
+        AuthStore.update((s) => {
+          s.isLoggedIn = false;
+          router.replace("/(auth)");
+        });
+        // console.log("Connected wallet address:", provider, address);
+      } catch (error) {
+        console.log("Login error:", error);
+      }
+    }
+  }, [isConnected]);
 
   return (
     <Tabs

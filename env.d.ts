@@ -1,5 +1,3 @@
-declare namespace NodeJS {
-  interface ProcessEnv {
-    EXPO_PROJECT_ID: string;
-  }
+declare module "@env" {
+  export const ENV_PROJECT_ID: string;
 }
