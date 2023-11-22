@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./Onboarding.sol";
+import "./UserOnboarding.sol";
 
 contract UserOnboardingWithOwnership is UserOnboarding {
     address public owner;
