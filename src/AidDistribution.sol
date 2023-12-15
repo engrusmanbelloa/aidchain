@@ -8,11 +8,7 @@ contract AidDistribution is Donation {
     mapping(uint256 => DistributionRecord[]) private programDistributions;
 
     // Events
-    event AidDistributed(
-        address indexed beneficiary,
-        string programName,
-        uint256 amount
-    );
+    event AidDistributed(address indexed beneficiary, string programName, uint256 amount);
 
     // Struct to hold aid distribution records
     struct DistributionRecord {
@@ -25,10 +21,7 @@ contract AidDistribution is Donation {
 
     // Function to distribute aid to beneficiaries based on predefined criteria
     function distributeAid(uint256 _programIndex) public onlyOwner {
-        require(
-            _programIndex < donationOptions.length,
-            "Invalid program index"
-        );
+        require(_programIndex < donationOptions.length, "Invalid program index");
 
         DonationOption storage chosenOption = donationOptions[_programIndex];
 
@@ -49,44 +42,25 @@ contract AidDistribution is Donation {
         for (uint256 i = 0; i < numberOfBeneficiaries; i++) {
             address beneficiary = applicants[i];
             programDistributions[_programIndex].push(
-                DistributionRecord({
-                    beneficiary: beneficiary,
-                    amount: aidPerBeneficiary,
-                    timestamp: block.timestamp
-                })
+                DistributionRecord({beneficiary: beneficiary, amount: aidPerBeneficiary, timestamp: block.timestamp})
             );
 
             // Transfer aid amount to the beneficiary
             cUSD.transfer(beneficiary, aidPerBeneficiary);
 
-            emit AidDistributed(
-                beneficiary,
-                chosenOption.name,
-                aidPerBeneficiary
-            );
+            emit AidDistributed(beneficiary, chosenOption.name, aidPerBeneficiary);
         }
     }
 
     // Function to get the distribution records for a specific program
-    function getDistributionRecords(
-        uint256 _programIndex
-    ) external view returns (DistributionRecord[] memory) {
-        require(
-            _programIndex < donationOptions.length,
-            "Invalid program index"
-        );
+    function getDistributionRecords(uint256 _programIndex) external view returns (DistributionRecord[] memory) {
+        require(_programIndex < donationOptions.length, "Invalid program index");
         return programDistributions[_programIndex];
     }
 
     // Function to check if a User is a beneficiary of a specific program
-    function isBeneficiaryOfProgram(
-        address _user,
-        uint256 _programIndex
-    ) external view returns (bool) {
-        require(
-            _programIndex < donationOptions.length,
-            "Invalid program index"
-        );
+    function isBeneficiaryOfProgram(address _user, uint256 _programIndex) external view returns (bool) {
+        require(_programIndex < donationOptions.length, "Invalid program index");
 
         address[] storage beneficiaries = programApplicants[_programIndex];
         for (uint256 i = 0; i < beneficiaries.length; i++) {

@@ -46,16 +46,10 @@ contract Donation is Governance {
 
     // Function to allow users to apply for program participation
     function applyForProgram(uint256 _proposalIndex) external onlyRegistered {
-        require(
-            _proposalIndex < programProposals.length,
-            "Invalid proposal index"
-        );
+        require(_proposalIndex < programProposals.length, "Invalid proposal index");
 
         Proposal storage proposal = programProposals[_proposalIndex];
-        require(
-            proposal.status == ProposalStatus.Approved,
-            "Proposal not approved"
-        );
+        require(proposal.status == ProposalStatus.Approved, "Proposal not approved");
         require(block.timestamp >= proposal.startTime, "Program not started");
         require(block.timestamp <= proposal.endTime, "Program ended");
 
@@ -66,31 +60,17 @@ contract Donation is Governance {
     }
 
     // Function to retrieve applicants for a specific program
-    function getApplicantsForProgram(
-        uint256 _proposalIndex
-    ) internal view returns (address[] memory) {
-        require(
-            _proposalIndex < programProposals.length,
-            "Invalid proposal index"
-        );
+    function getApplicantsForProgram(uint256 _proposalIndex) internal view returns (address[] memory) {
+        require(_proposalIndex < programProposals.length, "Invalid proposal index");
         return programApplicants[_proposalIndex];
     }
 
     // Function to donate only winning proposals
-    function donateToWinningProposal(
-        uint256 _proposalIndex,
-        uint256 _amount
-    ) public payable onlyRegistered {
-        require(
-            _proposalIndex < programProposals.length,
-            "Invalid proposal index"
-        );
+    function donateToWinningProposal(uint256 _proposalIndex, uint256 _amount) public payable onlyRegistered {
+        require(_proposalIndex < programProposals.length, "Invalid proposal index");
 
         Proposal storage proposal = programProposals[_proposalIndex];
-        require(
-            proposal.status == ProposalStatus.Approved,
-            "Proposal not approved"
-        );
+        require(proposal.status == ProposalStatus.Approved, "Proposal not approved");
         require(block.timestamp >= proposal.startTime, "Program not started");
         require(block.timestamp <= proposal.endTime, "Program ended");
         require(_amount >= 10 * 1e18, "Minimum donation amount not met");
@@ -113,11 +93,7 @@ contract Donation is Governance {
         emit DonationMade(donor, proposal.description, _amount);
     }
 
-    function updateUserFunds(
-        UserFunds[] storage funds,
-        address user,
-        uint256 amount
-    ) private {
+    function updateUserFunds(UserFunds[] storage funds, address user, uint256 amount) private {
         bool userFound = false;
 
         for (uint256 i = 0; i < funds.length; i++) {
@@ -133,10 +109,7 @@ contract Donation is Governance {
         }
     }
 
-    function getUserFundsIndex(
-        UserFunds[] storage userFunds,
-        address user
-    ) internal view returns (int256) {
+    function getUserFundsIndex(UserFunds[] storage userFunds, address user) internal view returns (int256) {
         for (uint256 i = 0; i < userFunds.length; i++) {
             if (userFunds[i].user == user) {
                 return int256(i);
@@ -145,9 +118,7 @@ contract Donation is Governance {
         return -1;
     }
 
-    function getDonationOption(
-        uint256 _optionIndex
-    )
+    function getDonationOption(uint256 _optionIndex)
         public
         view
         returns (string memory name, address recipient, uint256 totalFunded)
@@ -158,10 +129,7 @@ contract Donation is Governance {
         return (option.name, option.recipient, option.totalFunded);
     }
 
-    function getUserDonation(
-        address _user,
-        uint256 _optionIndex
-    ) public view returns (uint256) {
+    function getUserDonation(address _user, uint256 _optionIndex) public view returns (uint256) {
         require(_optionIndex < donationOptions.length, "Invalid option index");
 
         UserFunds[] storage userFunds = donationOptionToFunds[_optionIndex];
@@ -175,9 +143,7 @@ contract Donation is Governance {
         return 0; // User has not made a donation for this option
     }
 
-    function getAllUsersForOption(
-        uint256 _optionIndex
-    ) public view returns (address[] memory) {
+    function getAllUsersForOption(uint256 _optionIndex) public view returns (address[] memory) {
         require(_optionIndex < donationOptions.length, "Invalid option index");
 
         UserFunds[] storage userFunds = donationOptionToFunds[_optionIndex];
@@ -191,9 +157,7 @@ contract Donation is Governance {
         return users;
     }
 
-    function getProgramStatus(
-        uint256 _optionIndex
-    ) public view returns (string memory status) {
+    function getProgramStatus(uint256 _optionIndex) public view returns (string memory status) {
         require(_optionIndex < donationOptions.length, "Invalid option index");
 
         DonationOption storage option = donationOptions[_optionIndex];
@@ -201,18 +165,12 @@ contract Donation is Governance {
 
         if (currentTime < option.startTime) {
             return "Upcoming";
-        } else if (
-            currentTime >= option.startTime && currentTime <= option.endTime
-        ) {
+        } else if (currentTime >= option.startTime && currentTime <= option.endTime) {
             return "Active";
         } else {
             return "Passed";
         }
     }
 
-    event DonationMade(
-        address indexed donor,
-        string optionName,
-        uint256 amount
-    );
+    event DonationMade(address indexed donor, string optionName, uint256 amount);
 }

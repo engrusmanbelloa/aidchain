@@ -24,11 +24,7 @@ contract GovernanceTest is Test {
         governance.proposeProgram(description, startTime, endTime);
         uint256 newProgramCount = governance.getProgramProposalCount();
 
-        assertEq(
-            newProgramCount,
-            initialProgramCount + 1,
-            "Program count should increase by 1"
-        );
+        assertEq(newProgramCount, initialProgramCount + 1, "Program count should increase by 1");
     }
 
     function test_ProposeAndVote() public {
@@ -43,7 +39,7 @@ contract GovernanceTest is Test {
         governance.voteOnProposal(0, isSupported);
 
         // Check the vote count for the proposal
-        (, , , uint256 votesFor, , , ) = governance.getProposal(0);
+        (,,, uint256 votesFor,,,) = governance.getProposal(0);
         assertEq(votesFor, 1, "Votes for proposal should be 1");
     }
 }

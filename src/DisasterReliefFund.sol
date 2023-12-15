@@ -34,10 +34,7 @@ contract DisasterReliefFund is UserOnboardingWithOwnership {
     mapping(uint256 => address[]) public programApplicants;
 
     modifier onlyEmergencyFundOwner(uint256 _fundIndex) {
-        require(
-            emergencyReliefFunds[_fundIndex].owner == msg.sender,
-            "Not fund owner"
-        );
+        require(emergencyReliefFunds[_fundIndex].owner == msg.sender, "Not fund owner");
         _;
     }
 
@@ -53,14 +50,8 @@ contract DisasterReliefFund is UserOnboardingWithOwnership {
         uint256 _endTime
     ) external onlyOwner {
         require(_targetAmount > 0, "Target amount must be greater than 0");
-        require(
-            _startTime > block.timestamp,
-            "Start time must be in the future"
-        );
-        require(
-            _endTime > block.timestamp,
-            "Endtime time must be in the future"
-        );
+        require(_startTime > block.timestamp, "Start time must be in the future");
+        require(_endTime > block.timestamp, "Endtime time must be in the future");
 
         emergencyReliefFunds.push(
             EmergencyReliefFund({
@@ -75,19 +66,10 @@ contract DisasterReliefFund is UserOnboardingWithOwnership {
         );
     }
 
-    function donateToEmergencyFund(
-        uint256 _fundIndex,
-        uint256 _amount
-    ) external onlyRegistered {
+    function donateToEmergencyFund(uint256 _fundIndex, uint256 _amount) external onlyRegistered {
         require(_fundIndex < emergencyReliefFunds.length, "Invalid fund index");
-        require(
-            block.timestamp >= emergencyReliefFunds[_fundIndex].startTime,
-            "Fundraising not started"
-        );
-        require(
-            block.timestamp <= emergencyReliefFunds[_fundIndex].endTime,
-            "Fundraising ended"
-        );
+        require(block.timestamp >= emergencyReliefFunds[_fundIndex].startTime, "Fundraising not started");
+        require(block.timestamp <= emergencyReliefFunds[_fundIndex].endTime, "Fundraising ended");
         require(_amount > 0, "Donation amount must be greater than 0");
 
         EmergencyReliefFund storage fund = emergencyReliefFunds[_fundIndex];
@@ -104,18 +86,10 @@ contract DisasterReliefFund is UserOnboardingWithOwnership {
         }
     }
 
-    function applyForEmergencyRelief(
-        uint256 _fundIndex
-    ) external onlyRegistered {
+    function applyForEmergencyRelief(uint256 _fundIndex) external onlyRegistered {
         require(_fundIndex < emergencyReliefFunds.length, "Invalid fund index");
-        require(
-            block.timestamp >= emergencyReliefFunds[_fundIndex].startTime,
-            "Fundraising not started"
-        );
-        require(
-            block.timestamp <= emergencyReliefFunds[_fundIndex].endTime,
-            "Fundraising ended"
-        );
+        require(block.timestamp >= emergencyReliefFunds[_fundIndex].startTime, "Fundraising not started");
+        require(block.timestamp <= emergencyReliefFunds[_fundIndex].endTime, "Fundraising ended");
 
         // EmergencyReliefFund storage fund = emergencyReliefFunds[_fundIndex];
 
@@ -123,18 +97,10 @@ contract DisasterReliefFund is UserOnboardingWithOwnership {
         programApplicants[_fundIndex].push(msg.sender);
     }
 
-    function distributeEmergencyFund(
-        uint256 _fundIndex
-    ) external onlyEmergencyFundOwner(_fundIndex) {
+    function distributeEmergencyFund(uint256 _fundIndex) external onlyEmergencyFundOwner(_fundIndex) {
         require(_fundIndex < emergencyReliefFunds.length, "Invalid fund index");
-        require(
-            emergencyReliefFunds[_fundIndex].funded,
-            "Fund not fully funded"
-        );
-        require(
-            block.timestamp > emergencyReliefFunds[_fundIndex].endTime,
-            "Fundraising not ended"
-        );
+        require(emergencyReliefFunds[_fundIndex].funded, "Fund not fully funded");
+        require(block.timestamp > emergencyReliefFunds[_fundIndex].endTime, "Fundraising not ended");
 
         EmergencyReliefFund storage fund = emergencyReliefFunds[_fundIndex];
 
@@ -156,10 +122,7 @@ contract DisasterReliefFund is UserOnboardingWithOwnership {
     }
 
     // Function to check if a user is a beneficiary of a specific emergency fund
-    function isBeneficiaryOfFund(
-        address _user,
-        uint256 _fundIndex
-    ) external view returns (bool) {
+    function isBeneficiaryOfFund(address _user, uint256 _fundIndex) external view returns (bool) {
         require(_fundIndex < emergencyReliefFunds.length, "Invalid fund index");
 
         EmergencyReliefFund storage fund = emergencyReliefFunds[_fundIndex];
@@ -167,9 +130,7 @@ contract DisasterReliefFund is UserOnboardingWithOwnership {
     }
 
     // Function to check if a user has ever benefited from any emergency fund
-    function hasBenefitedFromAnyFund(
-        address _user
-    ) external view returns (bool) {
+    function hasBenefitedFromAnyFund(address _user) external view returns (bool) {
         for (uint256 i = 0; i < emergencyReliefFunds.length; i++) {
             if (userToAddress[_user] == emergencyReliefFunds[i].owner) {
                 return true;
